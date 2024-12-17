@@ -8,7 +8,7 @@ const port = 3000;
 app.use(express.json());
 
 // Servir les fichiers statiques depuis le dossier "static"
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'CSS')));
 
 // Lire le fichier JSON des utilisateurs
 const readUsers = () => {
@@ -24,7 +24,7 @@ const readLogements = () => {
 
 // Route principale : Page d'accueil (HTML)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 // Route pour obtenir tous les utilisateurs
