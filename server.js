@@ -1,93 +1,112 @@
 const express = require('express');
-const app = express();
 const path = require('path');
-const fs = require('fs'); // Importer le module 'fs' pour lire/écrire les fichiers JSON
-const logements = require('./data/logement.json'); // Charger le fichier logement JSON
-const usersFilePath = path.join(__dirname, 'data', 'user.json'); // Chemin vers le fichier des utilisateurs
+const fs = require('fs');
+const app = express();
+const port = 3000;
 
-app.use(express.json()); // Middleware pour le parsing du JSON
+// Middleware pour parser les requêtes JSON
+app.use(express.json());
 
-// Fonction pour lire les utilisateurs depuis le fichier JSON
+// Servir les fichiers statiques depuis le dossier "static"
+app.use(express.static(path.join(__dirname, 'static')));
+
+// Lire le fichier JSON des utilisateurs
 const readUsers = () => {
-  const data = fs.readFileSync(usersFilePath, 'utf8');
-  return JSON.parse(data);
+  const rawData = fs.readFileSync('./user.json');
+  return JSON.parse(rawData);
 };
 
-// Fonction pour écrire les utilisateurs dans le fichier JSON
-const writeUsers = (users) => {
-  fs.writeFileSync(usersFilePath, JSON.stringify({ users }, null, 2), 'utf8');
+// Lire le fichier JSON des logements
+const readLogements = () => {
+  const rawData = fs.readFileSync('./data/logements.json');
+  return JSON.parse(rawData);
 };
 
-// Route de base : renvoie la page HTML
+// Route principale : Page d'accueil (HTML)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Route pour récupérer tous les logements
-app.get('/logements', (req, res) => {
-  res.status(200).json(logements);
-});
-
-// Route pour récupérer un logement par ID
-app.get('/logements/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const logement = logements.logements.find((l) => l.id === id);
-
-  if (logement) {
-    res.status(200).json(logement);
-  } else {
-    res.status(404).json({ message: 'Logement non trouvé' });
-  }
-});
-
-// Route pour récupérer tous les utilisateurs
+// Route pour obtenir tous les utilisateurs
 app.get('/users', (req, res) => {
-    try {
-      const users = readUsers(); // Lis le fichier JSON
-      res.status(200).json(users); // Renvoie la réponse en JSON
-    } catch (err) {
-      console.error('Erreur de lecture du fichier JSON:', err);
-      res.status(500).json({ message: 'Erreur serveur' });
-    }
-  });
-
-// Route pour récupérer un utilisateur par ID
-app.get('/users/:id', (req, res) => {
-  const id = parseInt(req.params.id);
   const users = readUsers();
-  const user = users.users.find((u) => u.id === id);
+  res.status(200).json(users);
+});
 
-  if (user) {
-    res.status(200).json(user);
-  } else {
-    res.status(404).json({ message: 'Utilisateur non trouvé' });
+// Route pour obtenir un utilisateur par son ID
+app.get('/users/:id', (req, res) => {
+  const users = readUsers();
+  const user = users.find(u => u.id == req.params.id);
+  if (!user) {
+    return res.status(404).json({ message: 'Utilisateur non trouvé' });
   }
+  res.status(200).json(user);
 });
 
 // Route pour ajouter un utilisateur
 app.post('/users', (req, res) => {
-  const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: 'Nom d\'utilisateur, email et mot de passe sont obligatoires' });
-  }
-
   const users = readUsers();
-  const newUser = {
-    id: users.users.length + 1, // Générer un ID unique
-    username,
-    email,
-    password, // Le mot de passe doit être haché dans un projet réel, mais ici il est en clair pour l'exemple
-  };
-
-  users.users.push(newUser);
-  writeUsers(users);
-
+  const newUser = req.body;
+  users.push(newUser);
+  fs.writeFileSync('./user.json', JSON.stringify(users, null, 2));
   res.status(201).json(newUser);
 });
 
-// Lancement du serveur
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Serveur lancé sur le port ${PORT}`);
+// Route pour obtenir tous les logements
+app.get('/elements', (req, res) => {
+  const logements = readLogements();
+  res.status(200).json(logements);
+});
+
+// Route pour obtenir un logement par ID
+app.get('/elements/:id', (req, res) => {
+  const logements = readLogements();
+  const logement = logements.find(l => l.id == req.params.id);
+  if (!logement) {
+    return res.status(404).json({ message: 'Logement non trouvé' });
+  }
+  res.status(200).json(logement);
+});
+
+// Route pour ajouter un logement
+app.post('/elements', (req, res) => {
+  const logements = readLogements();
+  const newLogement = req.body;
+  logements.push(newLogement);
+  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  res.status(201).json(newLogement);
+});
+
+// Route pour modifier un logement par ID
+app.put('/elements/:id', (req, res) => {
+  const logements = readLogements();
+  const index = logements.findIndex(l => l.id == req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ message: 'Logement non trouvé' });
+  }
+  logements[index] = { ...logements[index], ...req.body };
+  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  res.status(200).json(logements[index]);
+});
+
+// Route pour supprimer un logement par ID
+app.delete('/elements/:id', (req, res) => {
+  const logements = readLogements();
+  const index = logements.findIndex(l => l.id == req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ message: 'Logement non trouvé' });
+  }
+  logements.splice(index, 1);
+  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  res.status(200).json({ message: 'Logement supprimé' });
+});
+
+// Middleware pour les routes non définies
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route inconnue' });
+});
+
+// Lancer le serveur
+app.listen(port, () => {
+  console.log(`Serveur démarré sur http://localhost:${port}`);
 });
