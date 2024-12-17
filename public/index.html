@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title> 
+</head>
+<body>
+    <div class="container">
+        <h2>Connexion</h2>
+        <form id="loginForm">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" placeholder="Entrez votre nom" required>
+
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" placeholder="Entrez votre mot de passe" required>
+
+            <button type="submit">Se connecter</button>
+            <div class="error" id="error"></div>
+            <div class="success" id="success"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            try {
+                const response = await fetch('http://localhost:5000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successDiv.textContent = 'Connexion réussie !';
+                    localStorage.setItem('token', data.token); // Stocke le JWT
+                    setTimeout(() => {
+                        window.location.href = '/'; // Redirige ou remplace selon besoin
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || 'Erreur de connexion');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>

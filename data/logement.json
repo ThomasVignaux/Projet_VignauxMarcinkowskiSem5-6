@@ -1,0 +1,27 @@
+{
+    "logements": [
+      {
+        "id": 1,
+        "prix": 1000,
+        "ville": "albi",
+        "nbpiece": 5,
+        "superficie": 60,
+        "type": ["maison", "appart"],
+        "jardin": true,
+        "piscine": false,
+        "garage": true
+      },
+      {
+        "id": 2,
+        "prix": 500,
+        "ville": "albi",
+        "nbpiece": 5,
+        "superficie": 60,
+        "type": ["maison", "appart"],
+        "jardin": true,
+        "piscine": false,
+        "garage": true
+      }
+    ]
+  }
+  
