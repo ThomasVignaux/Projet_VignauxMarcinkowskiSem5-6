@@ -1,12 +1,22 @@
 [
   {
-    "id":1,
-    "username": "a",
-    "password": "$2b$10$QVYovgy35XF6JZ7lXKCtvunr8W22JYF9vxLpmXY2apMP.3GE5zEYO"
+    "id": 1,
+    "nomU": "a",
+    "mdp": "$2b$10$QVYovgy35XF6JZ7lXKCtvunr8W22JYF9vxLpmXY2apMP.3GE5zEYO"
   },
   {
     "id": 2,
-    "username": "b",
-    "password": "$2b$10$tfx160MtWy.xeiUadqdTHevJK9HhIYeVQy5xwoISfvrrTwyuvosAu"
+    "nomU": "b",
+    "mdp": "$2b$10$tfx160MtWy.xeiUadqdTHevJK9HhIYeVQy5xwoISfvrrTwyuvosAu"
+  },
+  {
+    "id": 3,
+    "nomU": "c",
+    "mdp": "$2b$10$N5albhqw16xRmUXKFi1MA.xyACamSrR4mI1Gq/FKSfnnGuvxooQx."
+  },
+  {
+    "id": 4,
+    "nomU": "d",
+    "mdp": "$2b$10$mV2tZE5U9m6qnrly42vk9eTK.sH5qUJaUO4.lGvpRRbQw7AvIJ/PW"
   }
 ]

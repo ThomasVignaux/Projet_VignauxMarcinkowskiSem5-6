@@ -41,11 +41,11 @@ app.get('/login', (req, res) => {
 
 //[ ] Présence d’un mécanisme d’authentification
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { nomU, mdp } = req.body;
 
   try {
     const users = readUsers();
-    const user = users.find(u => u.username === username);
+    const user = users.find(u => u.nomU === nomU);
 
     if (!user) {
       //[ ] 401 en cas d’accès non authentifié
@@ -53,14 +53,14 @@ app.post('/login', async (req, res) => {
       return res.render('login', { error: 'Nom d’utilisateur incorrect.' });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(mdp, user.mdp);
     if (!match) {
       res.status(401).send("accès non authentifié");
       return res.render('login', { error: 'Mot de passe incorrect.' });
     }
 
     // Authentification réussie
-    res.render('dashboard', { username });
+    res.render('dashboard', { nomU });
   } catch (error) {
     console.error("Erreur de lecture du fichier :", error);
     res.status(500).send("Erreur serveur.");
@@ -74,27 +74,27 @@ app.get('/newaccount', (req, res) => {
 //[ ] le POST /elements ajoute des données à la base de données
 //[ ] Possibilité de créer un compte utilisateur de compte
 app.post('/newaccount', async (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+  const { nomU, mdp, confirmMDP } = req.body;
 
-  if (password !== confirmPassword) {
+  if (mdp !== confirmMDP) {
     return res.render('newaccount', { error: 'Les mots de passe ne correspondent pas.', success: null });
   }
 
   try {
     const users = readUsers();
-    const userExists = users.find(u => u.username === username);
+    const userExists = users.find(u => u.nomU === nomU);
 
     if (userExists) {
       return res.render('newaccount', { error: 'Le nom d’utilisateur existe déjà.', success: null });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = { id: users.length + 1, username, password: hashedPassword };
+    const hashedPassword = await bcrypt.hash(mdp, 10);
+    const newUser = { id: users.length + 1, nomU, mdp: hashedPassword };
 
     users.push(newUser);
     fs.writeFileSync(userFile, JSON.stringify(users, null, 2));
 
-    res.render('newaccount', { error: null, success: 'Compte créé avec succès. Vous pouvez vous connecter.' });
+    res.render('login', { error: null, success: 'Compte créé avec succès. Vous pouvez vous connecter.' });
   } catch (error) {
     console.error("Erreur lors de la création du compte :", error);
     res.status(500).send("Erreur serveur.");
