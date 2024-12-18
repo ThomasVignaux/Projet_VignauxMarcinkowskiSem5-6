@@ -3,13 +3,20 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const port = 3000;
+const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
 
 // Middleware pour parser les requêtes JSON
 app.use(express.json());
 
 // Servir les fichiers statiques depuis le dossier "static"
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'CSS')));
 
+
+app.set('view engine', 'ejs');
+
+const userFile = path.join(__dirname, 'user.json');
 // Lire le fichier JSON des utilisateurs
 const readUsers = () => {
   const rawData = fs.readFileSync('./user.json');
@@ -18,13 +25,41 @@ const readUsers = () => {
 
 // Lire le fichier JSON des logements
 const readLogements = () => {
-  const rawData = fs.readFileSync('./data/logements.json');
-  return JSON.parse(rawData);
+  const data = fs.readFileSync(userFile, 'utf8');
+  return JSON.parse(data);
 };
 
 // Route principale : Page d'accueil (HTML)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/public/index.html'));
+});
+
+app.get('/login', (req, res) => {
+  res.render('login', { error: null });
+});
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const users = readUsers();
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+      return res.render('login', { error: 'Nom d’utilisateur incorrect.' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.render('login', { error: 'Mot de passe incorrect.' });
+    }
+
+    // Authentification réussie
+    res.render('dashboard', { username });
+  } catch (error) {
+    console.error("Erreur de lecture du fichier :", error);
+    res.status(500).send("Erreur serveur.");
+  }
 });
 
 // Route pour obtenir tous les utilisateurs
