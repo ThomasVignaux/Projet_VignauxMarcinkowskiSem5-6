@@ -1,0 +1,5 @@
+Pour tester les PUT, DELETE, ...
+- clique droit inspecter
+- resaux
+- clique droit sur un GET
+- modifier et renvoyer 
