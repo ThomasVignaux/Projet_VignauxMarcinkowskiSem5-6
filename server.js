@@ -6,7 +6,6 @@ const port = 3000;
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 
-// Middleware pour parser les requêtes JSON
 app.use(express.json());
 
 // Servir les fichiers statiques depuis le dossier "static"
@@ -34,10 +33,12 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
+
 app.get('/login', (req, res) => {
   res.render('login', { error: null });
 });
 
+//[ ] Présence d’un mécanisme d’authentification
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -46,11 +47,14 @@ app.post('/login', async (req, res) => {
     const user = users.find(u => u.username === username);
 
     if (!user) {
+      //[ ] 401 en cas d’accès non authentifié
+      res.status(401).send("accès non authentifié");
       return res.render('login', { error: 'Nom d’utilisateur incorrect.' });
     }
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
+      res.status(401).send("accès non authentifié");
       return res.render('login', { error: 'Mot de passe incorrect.' });
     }
 
@@ -66,6 +70,8 @@ app.get('/newaccount', (req, res) => {
   res.render('newaccount', { error: null, success: null });
 });
 
+//[ ] le POST /elements ajoute des données à la base de données
+//[ ] Possibilité de créer un compte utilisateur de compte
 app.post('/newaccount', async (req, res) => {
   const { username, password, confirmPassword } = req.body;
 
@@ -119,19 +125,20 @@ app.post('/users', (req, res) => {
   res.status(201).json(newUser);
 });
 
-// Route pour obtenir tous les logements
+// [ ] Le GET /elements renvoie une liste
 app.get('/elements', (req, res) => {
   const logements = readLogements();
   res.status(200).json(logements);
 });
 
-// Route pour obtenir un logement par ID
+// [ ] Le GET /elements/un-id renvoie un élément en détail
 app.get('/elements/:id', (req, res) => {
   const logements = readLogements();
   const logement = logements.find(l => l.id == req.params.id);
   if (!logement) {
     return res.status(404).json({ message: 'Logement non trouvé' });
   }
+  //[ ] GET en 200
   res.status(200).json(logement);
 });
 
@@ -144,7 +151,7 @@ app.post('/elements', (req, res) => {
   res.status(201).json(newLogement);
 });
 
-// Route pour modifier un logement par ID
+// [ ] PUT ou PATCH /elements/un-id qui l’enregistrement
 app.put('/elements/:id', (req, res) => {
   const logements = readLogements();
   const index = logements.findIndex(l => l.id == req.params.id);
@@ -156,7 +163,7 @@ app.put('/elements/:id', (req, res) => {
   res.status(200).json(logements[index]);
 });
 
-// Route pour supprimer un logement par ID
+//[ ] DELETE /elements/un-id qui supprime un enregistrement
 app.delete('/elements/:id', (req, res) => {
   const logements = readLogements();
   const index = logements.findIndex(l => l.id == req.params.id);
@@ -168,12 +175,12 @@ app.delete('/elements/:id', (req, res) => {
   res.status(200).json({ message: 'Logement supprimé' });
 });
 
-// Middleware pour les routes non définies
+// [ ] 404 en cas de route inconnue et en cas d’enregistrement inconnu
 app.use((req, res) => {
   res.status(404).json({ message: 'Route inconnue' });
 });
 
-// Lancer le serveur
+// [ ] Serveur express qui se lance
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
 });
