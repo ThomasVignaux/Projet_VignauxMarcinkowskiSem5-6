@@ -1,5 +1,5 @@
 {
-  "name": "projet-express-mongodb",
+  "name": "projet-web",
   "version": "1.0.0",
   "main": "serveur.js",
   "scripts": {
@@ -16,7 +16,6 @@
     "mongoose": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0",
-    "supertest": "^6.3.0"
+    "nodemon": "^3.0.0"
   }
 }
