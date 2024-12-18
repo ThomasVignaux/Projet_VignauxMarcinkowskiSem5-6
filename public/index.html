@@ -3,59 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title> 
+    <title>Accueil</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="container">
-        <h2>Connexion</h2>
-        <form id="loginForm">
-            <label for="username">aaaaaaaaaaaaaaaa</label>
-            <input type="text" id="username" placeholder="Entrez votre nom" required>
-
-            <label for="password">Mot de passe</label>
-            <input type="password" id="password" placeholder="Entrez votre mot de passe" required>
-
-            <button type="submit">Se connecter</button>
-            <div class="error" id="error"></div>
-            <div class="success" id="success"></div>
-        </form>
+        <h1>Bienvenue</h1>
+        <p>Veuillez vous connecter ou créer un compte pour continuer.</p>
+        <div class="buttons">
+            <button onclick="window.location.href='/login'">Connexion</button>
+            <button onclick="window.location.href='/newaccount'">S'inscrire</button>
+        </div>
     </div>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error');
-            const successDiv = document.getElementById('success');
-
-            errorDiv.textContent = '';
-            successDiv.textContent = '';
-
-            try {
-                const response = await fetch('http://localhost:5000/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    successDiv.textContent = 'Connexion réussie !';
-                    localStorage.setItem('token', data.token); // Stocke le JWT
-                    setTimeout(() => {
-                        window.location.href = '/'; // Redirige ou remplace selon besoin
-                    }, 1000);
-                } else {
-                    throw new Error(data.message || 'Erreur de connexion');
-                }
-            } catch (error) {
-                errorDiv.textContent = error.message;
-            }
-        });
-    </script>
 </body>
 </html>
