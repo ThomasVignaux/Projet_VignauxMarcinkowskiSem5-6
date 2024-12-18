@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'CSS')));
 app.set('view engine', 'ejs');
 
 const userFile = path.join(__dirname, '/baseDD/user.json');
+const logementFile = path.join(__dirname, '/baseDD/logement.json');
 // Lire le fichier JSON des utilisateurs
 const readUsers = () => {
   const rawbaseDD = fs.readFileSync('./baseDD/user.json');
@@ -25,7 +26,7 @@ const readUsers = () => {
 
 // Lire le fichier JSON des logements
 const readLogements = () => {
-  const baseDD = fs.readFileSync(userFile, 'utf8');
+  const baseDD = fs.readFileSync(logementFile, 'utf8');
   return JSON.parse(baseDD);
 };
 
@@ -128,6 +129,7 @@ app.get('/elements', (req, res) => {
 // Route pour obtenir un logement par ID
 app.get('/elements/:id', (req, res) => {
   const logements = readLogements();
+  //console.log(logements)
   const logement = logements.find(l => l.id == req.params.id);
   if (!logement) {
     return res.status(404).json({ message: 'Logement non trouvé' });
@@ -168,12 +170,12 @@ app.delete('/elements/:id', (req, res) => {
   res.status(200).json({ message: 'Logement supprimé' });
 });
 
-// Middleware pour les routes non définies
+//erreur 404
 app.use((req, res) => {
   res.status(404).json({ message: 'Route inconnue' });
 });
 
-// Lancer le serveur
+// lancement serveur 
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
 });
