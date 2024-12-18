@@ -3,3 +3,6 @@ Pour tester les PUT, DELETE, ...
 - resaux
 - clique droit sur un GET
 - modifier et renvoyer 
+
+
+(heureusement que je suis la pour que tu te rappeles au toi du futur comment tu as fais pff...)
