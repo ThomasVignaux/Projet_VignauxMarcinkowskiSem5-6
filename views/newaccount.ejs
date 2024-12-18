@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Créer un compte</h2>
+        <% if (error) { %>
+            <p class="error"><%= error %></p>
+        <% } %>
+        <% if (success) { %>
+            <p class="success"><%= success %></p>
+        <% } %>
+        <form action="/newaccount" method="POST">
+            <label for="username">Nom d'utilisateur :</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password" name="password" required>
+            <label for="confirmPassword">Confirmez le mot de passe :</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+            <button type="submit">Créer un compte</button>
+        </form>
+    </div>
+</body>
+</html>

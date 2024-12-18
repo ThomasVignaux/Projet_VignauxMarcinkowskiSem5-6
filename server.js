@@ -62,6 +62,38 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/newaccount', (req, res) => {
+  res.render('newaccount', { error: null, success: null });
+});
+
+app.post('/newaccount', async (req, res) => {
+  const { username, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res.render('newaccount', { error: 'Les mots de passe ne correspondent pas.', success: null });
+  }
+
+  try {
+    const users = readUsers();
+    const userExists = users.find(u => u.username === username);
+
+    if (userExists) {
+      return res.render('newaccount', { error: 'Le nom d’utilisateur existe déjà.', success: null });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = { id: users.length + 1, username, password: hashedPassword };
+
+    users.push(newUser);
+    fs.writeFileSync(userFile, JSON.stringify(users, null, 2));
+
+    res.render('newaccount', { error: null, success: 'Compte créé avec succès. Vous pouvez vous connecter.' });
+  } catch (error) {
+    console.error("Erreur lors de la création du compte :", error);
+    res.status(500).send("Erreur serveur.");
+  }
+});
+
 // Route pour obtenir tous les utilisateurs
 app.get('/users', (req, res) => {
   const users = readUsers();
