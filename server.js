@@ -15,17 +15,17 @@ app.use(express.static(path.join(__dirname, 'CSS')));
 
 app.set('view engine', 'ejs');
 
-const userFile = path.join(__dirname, 'user.json');
+const userFile = path.join(__dirname, '/baseDD/user.json');
 // Lire le fichier JSON des utilisateurs
 const readUsers = () => {
-  const rawData = fs.readFileSync('./user.json');
-  return JSON.parse(rawData);
+  const rawbaseDD = fs.readFileSync('./baseDD/user.json');
+  return JSON.parse(rawbaseDD);
 };
 
 // Lire le fichier JSON des logements
 const readLogements = () => {
-  const data = fs.readFileSync(userFile, 'utf8');
-  return JSON.parse(data);
+  const baseDD = fs.readFileSync(userFile, 'utf8');
+  return JSON.parse(baseDD);
 };
 
 // Route principale : Page d'accueil (HTML)
@@ -147,7 +147,7 @@ app.post('/elements', (req, res) => {
   const logements = readLogements();
   const newLogement = req.body;
   logements.push(newLogement);
-  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  fs.writeFileSync('./baseDD/logements.json', JSON.stringify(logements, null, 2));
   res.status(201).json(newLogement);
 });
 
@@ -159,7 +159,7 @@ app.put('/elements/:id', (req, res) => {
     return res.status(404).json({ message: 'Logement non trouvé' });
   }
   logements[index] = { ...logements[index], ...req.body };
-  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  fs.writeFileSync('./baseDD/logements.json', JSON.stringify(logements, null, 2));
   res.status(200).json(logements[index]);
 });
 
@@ -171,7 +171,7 @@ app.delete('/elements/:id', (req, res) => {
     return res.status(404).json({ message: 'Logement non trouvé' });
   }
   logements.splice(index, 1);
-  fs.writeFileSync('./data/logements.json', JSON.stringify(logements, null, 2));
+  fs.writeFileSync('./baseDD/logements.json', JSON.stringify(logements, null, 2));
   res.status(200).json({ message: 'Logement supprimé' });
 });
 
