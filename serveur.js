@@ -36,7 +36,9 @@ app.get('/', (req, res) => {
 
 
 app.get('/login', (req, res) => {
+
   res.render('login', { error: null });
+
 });
 
 //[ ] Présence d’un mécanisme d’authentification
@@ -49,14 +51,14 @@ app.post('/login', async (req, res) => {
 
     if (!user) {
       //[ ] 401 en cas d’accès non authentifié
-      res.status(401).send("accès non authentifié");
-      return res.render('login', { error: 'Nom d’utilisateur incorrect.' });
+      //res.status(401).send("accès non authentifié");
+      return res.render('login', { error: 'Nom d’utilisateur ou mot de passe incorrect.' });
     }
 
     const compare = await bcrypt.compare(mdp, user.mdp);
     if (!compare) {
-      res.status(401).send("accès non authentifié");
-      return res.render('login', { error: 'Mot de passe incorrect.' });
+      //res.status(401).send("accès non authentifié");
+      return res.render('login', { error: 'Nom d’utilisateur ou mot de passe incorrect.' });
     }
 
  
@@ -76,10 +78,10 @@ app.get('/newaccount', (req, res) => {
 app.post('/newaccount', async (req, res) => {
   const { nomU, mdp, confirmMDP } = req.body;
 
-  if (mdp !== confirmMDP) {
+  /*if (mdp !== confirmMDP) {
     return res.render('newaccount', { error: 'Les mots de passe ne correspondent pas.', success: null });
   }
-
+*/
   try {
     const users = readUsers();
     const userExists = users.find(u => u.nomU === nomU);
@@ -93,8 +95,8 @@ app.post('/newaccount', async (req, res) => {
 
     users.push(newUser);
     fs.writeFileSync(userFile, JSON.stringify(users, null, 2));
+    res.redirect('/login');
 
-    res.render('login', { error: null, success: 'Compte créé avec succès. Vous pouvez vous connecter.' });
 
   } catch (error) {
     console.error("Erreur lors de la création du compte :", error);
@@ -113,6 +115,7 @@ app.get('/users/:id', (req, res) => {
   const users = readUsers();
   const user = users.find(u => u.id == req.params.id);
   if (!user) {
+    
     return res.status(404).json({ message: 'Utilisateur non trouvé' });
   }
   res.status(200).json(user);

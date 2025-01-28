@@ -4,7 +4,7 @@
   "main": "serveur.js",
   "scripts": {
     "start": "node serveur.js",
-    "dev": "nodemon serveur.js"
+    "dev": "nodemon --ignore baseDD/# serveur.js" 
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

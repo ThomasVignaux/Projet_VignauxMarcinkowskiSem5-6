@@ -13,5 +13,10 @@
     "id": 3,
     "nomU": "c",
     "mdp": "$2b$10$N5albhqw16xRmUXKFi1MA.xyACamSrR4mI1Gq/FKSfnnGuvxooQx."
+  },
+  {
+    "id": 4,
+    "nomU": "coucou",
+    "mdp": "$2b$10$mJ02pDjnNLdZWLNlAneFA.rSSGWPSKxyMnZPxW6QNZ9pN2YwcqTIC"
   }
 ]
